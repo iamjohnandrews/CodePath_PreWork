@@ -79,3 +79,46 @@ func isPalindromeReverse(value: String) -> Bool {
     return false
   }
 }
+
+//Given an unsorted integer array, find the first missing positive integer.
+func firstMissingPositive(_ A: [Int]) -> Int {
+  guard let maxArrayValue = A.max(),
+    maxArrayValue > 0 else { return 1 }
+  if A.count == 1 {
+    let element = A.first!
+    return element < 0 ? 1 : element + 1
+  }
+  let sortedArray = A.sorted()
+  for i in 1...sortedArray.count - 1 {
+    let currentValue = sortedArray[i]
+    let previousValue = sortedArray[i - 1]
+    
+    if currentValue > 1, previousValue < 0 { 
+      return 1
+    }
+    guard currentValue > 0, previousValue > 0 else { continue }
+    // assumes value should increase by one
+    if currentValue - previousValue != 1 {
+      return previousValue + 1
+    } 
+  }
+  return sortedArray.last! + 1
+}
+firstMissingPositive([1])
+
+// Given a sorted array of integers, find the number of occurrences of a given target value.
+func findCount(_ A: [Int], _ B: Int) -> Int {
+  return A.filter { $0 == B }.count
+}
+findCount([5, 7, 7, 8, 8, 10], 8)
+
+// Given a N cross M matrix in which each row is sorted, find the overall median of the matrix. Assume N*M is odd.
+func findMedian(_ A: [[Int]]) -> Int {
+  var combinedArray = [Int]()
+  for array in A {
+    combinedArray.append(contentsOf: array)
+  }
+  let medianIndex = Int(floor(Double(combinedArray.count/2)))
+  return combinedArray.sorted()[medianIndex]
+}
+findMedian([[1, 3, 5], [2, 6, 9], [3, 6, 9]])
