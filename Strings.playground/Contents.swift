@@ -2,6 +2,95 @@
 
 import UIKit
 
+/*
+ Write a function to find the longest common prefix string amongst an array of strings.
+ Longest common prefix for a pair of strings S1 and S2 is the longest string S which is the prefix of both S1 and S2.
+ As an example, longest common prefix of "abcdefgh" and "abcefgh" is "abc".
+ */
+// I'm assuming the prefix starts at index 0 for all words
+
+func longestCommonPrefix(_ A:  [String]) -> String {
+  var tempString: String = ""
+  guard !A.isEmpty else { return tempString }
+  if let onlyString = A.first, A.count == 1 {
+    return onlyString
+  } 
+  for stringIndex in 1..<A.count {
+    let stringA = A[stringIndex - 1]
+    let stringB = A[stringIndex]
+    
+    let upperBound = stringA.count > stringB.count ? stringB : stringA
+    for charIndex in 0..<upperBound.count {
+      let charFromStringA = String(stringA[stringA.index(stringA.startIndex, offsetBy: charIndex)])
+      let charFromStringB = String(stringB[stringB.index(stringB.startIndex, offsetBy: charIndex)])
+      
+      var charFromTempString: String = ""
+      if !tempString.isEmpty && charIndex < tempString.count {
+        charFromTempString = String(tempString[tempString.index(tempString.startIndex, offsetBy: charIndex)])
+      }
+      if tempString.isEmpty || charIndex >= tempString.count {
+        if charFromStringA == charFromStringB {
+          tempString = tempString + charFromStringA
+        } else {
+          break 
+        }
+      } else if charIndex < tempString.count && charFromStringA != charFromStringB {
+        // tempString.count should equal charIndex
+        tempString = removeCharactersUntilLength(of: tempString, equals: charIndex)
+      } else if charFromTempString != charFromStringA && charFromTempString != charFromStringB {
+        break
+      }
+    }
+  }
+  
+  return tempString
+}
+
+func removeCharactersUntilLength(of string: String, equals newCount: String.IndexDistance) -> String {
+  var newString = string
+  for index in stride(from: string.count, to: newCount, by: -1) {
+    newString.remove(at: newString.index(newString.endIndex, offsetBy: -index))
+  }
+  return newString
+}
+longestCommonPrefix([ "abcd", "abcp", "efgh" ])
+//longestCommonPrefix(["ABCD"])
+//longestCommonPrefix( [ "aaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" ])
+//longestCommonPrefix([ "abcdefgh", "aefghijk", "abcefgh" ])
+
+/*
+ Given two numbers represented as strings, return multiplication of the numbers as a string.
+ Note: The numbers can be arbitrarily large and are non-negative.
+ Note2: Your answer should not have leading zeroes. For example, 00 is not a valid answer. 
+ For example, 
+ given strings "12", "10", your answer should be “120”.
+ */
+func multiplyNumbers(_ A: String, _ B: String) -> String {
+  guard !A.isEmpty, !B.isEmpty else { return "" } 
+
+  var leftCharacterArray = A.reversed().map { Int(String($0))! }
+  var rightCharacterArray = B.reversed().map { Int(String($0))! }
+  var result = [Int](repeating: 0, count: leftCharacterArray.count + rightCharacterArray.count)
+  
+  for leftIndex in 0..<leftCharacterArray.count {
+    for rightIndex in 0..<rightCharacterArray.count {
+      
+      let resultIndex = leftIndex + rightIndex
+      
+      result[resultIndex] = leftCharacterArray[leftIndex] * rightCharacterArray[rightIndex] + (resultIndex >= result.count ? 0 : result[resultIndex])
+      if result[resultIndex] > 9 {
+        result[resultIndex + 1] = (result[resultIndex] / 10) + (resultIndex+1 >= result.count ? 0 : result[resultIndex + 1])
+        result[resultIndex] -= (result[resultIndex] / 10) * 10
+      }
+    }
+  }
+  
+  result = Array(result.reversed())
+  return result.map { String($0) }.joined(separator: "")
+}
+multiplyNumbers("12", "10")
+multiplyNumbers("5131848155574784703269632922904933776792735241197982102373370", "56675688419586288442134264892419611145485574406534291250836")
+/*
 // Given a string s consists of upper/lower-case alphabets and empty space characters ' ', return the length of last word in the string.
 // If the last word does not exist, return 0.
 func lengthOfLastWord(_ A: String) -> Int {
@@ -17,7 +106,7 @@ func lengthOfLastWord(_ A: String) -> Int {
   
   return lastWordLength
 }
-
+*/
 /*
  The count-and-say sequence is the sequence of integers beginning as follows:
  
@@ -68,7 +157,7 @@ func lengthOfLastWord(_ A: String) -> Int {
  Output: 2
  Input: AACECAAAA
  Output: 2
- */
+ 
 class Solution {
   func solve(_ A: inout String) -> Int {
     var result = numAppends(&A)
@@ -107,14 +196,14 @@ class Solution {
     return true
   }
 }
-
+*/
 /*
  Another question which belongs to the category of questions which are intentionally stated vaguely. 
  Expectation is that you will ask for correct clarification or you will state your assumptions before you start coding.
  
  Implement strStr().
  strstr - locate a substring ( needle ) in a string ( haystack ). 
- */
+ 
 class Solution {
   func strStr(_ A: String, _ B: String) -> Int {
     var answer = -1
@@ -144,7 +233,7 @@ class Solution {
     return answer
   }
 }
-
+*/
 /*
  Implement atoi to convert a string to an integer.
  
@@ -159,7 +248,7 @@ class Solution {
  A. Yes. Ignore it. Q3. If no numeric character is found before encountering garbage characters, what should I do?
  A. Return 0. Q4. What if the integer overflows?
  A. Return INT_MAX if the number is positive, INT_MIN otherwise. 
- */
+ 
 func atoi(_ A: String) -> Int {
   var arr = (A.components(separatedBy: " ")).filter { $0.count != 0 }
   
@@ -188,7 +277,7 @@ func atoi(_ A: String) -> Int {
     return negative ? -Int(sum) : Int(sum)
   }
 }
-
+*/
 /*
  Given an integer, convert it to a roman numeral, and return a string corresponding to its roman numeral version
  
@@ -201,7 +290,7 @@ func atoi(_ A: String) -> Int {
  
  Input : 14
  Return : "XIV"
- */
+ 
 func intToRoman(_ A: inout Int) -> String {
   if A == 0 { return "" }
   
@@ -248,7 +337,7 @@ func intToRoman(_ A: inout Int) -> String {
   
   return answer   
 }
-
+*/
 /*
  The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)
  
@@ -266,7 +355,7 @@ func intToRoman(_ A: inout Int) -> String {
  A....C
  ...B....D
  and hence the answer would be ACBD.
- */
+ 
 func convert(_ A: inout String, _ B: inout Int) -> String {
   if B == 1 { return A }
   else if B == 0 { return "" }
@@ -300,3 +389,5 @@ func convert(_ A: inout String, _ B: inout Int) -> String {
   
   return ans
 }
+*/
+
